@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build: .
@@ -14,8 +12,8 @@ services:
     expose:
       - "3000"
     environment:
-      - API_SECRET=${API_SECRET:-}
-      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-}
+      - API_SECRET=${API_SECRET}
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY}
     volumes:
       - backend-data:/app/data
     restart: unless-stopped
