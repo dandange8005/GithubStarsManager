@@ -549,7 +549,7 @@ const MarkdownImage: React.FC<{ src?: string; alt?: string; baseUrl?: string }> 
           </div>
 
           {!isLoading && !hasError && (
-            <div className="text-center mt-2 text-xs text-gray-400 dark:text-text-tertiary opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 flex items-center gap-3">
+            <div data-translate="false" className="text-center mt-2 text-xs text-gray-400 dark:text-text-tertiary opacity-0 group-hover/img:opacity-100 transition-opacity duration-200 flex items-center gap-3">
               <span>
                 {isInsideLink
                   ? (language === 'zh' ? '单击放大 · Ctrl+点击打开链接' : 'Click to zoom · Ctrl+Click to open link')
@@ -567,6 +567,7 @@ const MarkdownImage: React.FC<{ src?: string; alt?: string; baseUrl?: string }> 
 
           {!isLoading && !hasError && isInsideLink && parentLinkHref && (
             <div
+              data-translate="false"
               className="text-center mt-1 text-xs text-brand-violet dark:text-brand-violet opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center gap-1 cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
@@ -738,13 +739,16 @@ const MarkdownImage: React.FC<{ src?: string; alt?: string; baseUrl?: string }> 
 };
 
 const extractTextFromChildren = (children: React.ReactNode): string => {
-  if (typeof children === 'string') return children;
-  if (typeof children === 'number') return String(children);
-  if (Array.isArray(children)) return children.map(extractTextFromChildren).join('');
-  if (React.isValidElement(children)) {
-    return extractTextFromChildren((children.props as { children?: React.ReactNode }).children);
-  }
-  return '';
+  const inner = (children: React.ReactNode): string => {
+    if (typeof children === 'string') return children;
+    if (typeof children === 'number') return String(children);
+    if (Array.isArray(children)) return children.map(inner).join('');
+    if (React.isValidElement(children)) {
+      return inner((children.props as { children?: React.ReactNode }).children);
+    }
+    return '';
+  };
+  return inner(children).replace(/\s+/g, ' ').trim();
 };
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = memo(({
